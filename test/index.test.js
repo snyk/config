@@ -1,7 +1,7 @@
 var test = require('tape');
 
 test('can be loaded twice', function (t) {
-  var config = require('../')(__dirname + '/fixtures');
+  var config = require('../')('fixtures');
 
   t.equal(config.foo, 1, 'config matches');
   t.equal(config.bar, 2, 'config matches');
