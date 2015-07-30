@@ -1,0 +1,25 @@
+{
+  "name": "@remy/snyk-config",
+  "version": "1.0.0",
+  "description": "Config setup for snyk shared across projects",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "tape test/*.test.js | tap-spec"
+  },
+  "keywords": [
+    "config"
+  ],
+  "author": "Remy Sharp",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "tap-spec": "^4.0.2",
+    "tape": "^4.0.1"
+  },
+  "dependencies": {
+    "nconf": "^0.7.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Snyk/config.git"
+  }
+}
