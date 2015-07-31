@@ -1,6 +1,6 @@
 {
   "name": "@remy/snyk-config",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Config setup for snyk shared across projects",
   "main": "lib/index.js",
   "scripts": {
