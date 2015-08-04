@@ -18,8 +18,6 @@ test.only('env values override', function (t) {
   process.env.PORT = 8888; // jshint ignore:line
   var config = require('../')('fixtures/one');
 
-  console.log(config);
-
   t.equal(config.foo, 100, 'config matches');
   t.equal(config.bar, 2, 'config matches');
 
