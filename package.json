@@ -16,7 +16,7 @@
     "tape": "^4.0.1"
   },
   "dependencies": {
-    "nconf": "^0.7.1",
+    "nconf": "^0.7.2",
     "path-is-absolute": "^1.0.0"
   },
   "repository": {

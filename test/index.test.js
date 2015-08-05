@@ -15,11 +15,12 @@ test('can be loaded twice', function (t) {
 
 test.only('env values override', function (t) {
   process.env.SNYK_foo = 100; // jshint ignore:line
+  process.env.SNYK_bar__foo = 200; // jshint ignore:line
   process.env.PORT = 8888; // jshint ignore:line
   var config = require('../')('fixtures/one');
 
-  t.equal(config.foo, 100, 'config matches');
-  t.equal(config.bar, 2, 'config matches');
+  t.equal(config.foo, '100', 'config matches');
+  t.deepEqual(config.bar, { foo: '200' }, 'object matches');
 
   t.end();
 });
