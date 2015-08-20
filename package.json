@@ -1,10 +1,10 @@
 {
   "name": "@remy/snyk-config",
-  "version": "2.0.1",
   "description": "Config setup for snyk shared across projects",
   "main": "lib/index.js",
   "scripts": {
-    "test": "tape test/*.test.js | tap-spec"
+    "test": "node test/*.test.js | tap-spec && node -e 'process.exit(process.argv[1])' ${PIPESTATUS[0]}",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "keywords": [
     "config"
@@ -13,7 +13,8 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "tap-spec": "^4.0.2",
-    "tape": "^4.0.1"
+    "tape": "^4.0.1",
+    "semantic-release": "^4.1.0"
   },
   "dependencies": {
     "debug": "^2.2.0",
