@@ -13,7 +13,7 @@ test('can be loaded twice', function (t) {
   t.end();
 });
 
-test.only('env values override', function (t) {
+test('env values override', function (t) {
   process.env.SNYK_foo = 100; // jshint ignore:line
   process.env.SNYK_bar__foo = 200; // jshint ignore:line
   process.env.PORT = 8888; // jshint ignore:line
