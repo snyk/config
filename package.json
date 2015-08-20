@@ -3,7 +3,7 @@
   "description": "Config setup for snyk shared across projects",
   "main": "lib/index.js",
   "scripts": {
-    "test": "node test/*.test.js | tap-spec && echo ${PIPESTATUS[0]}",
+    "test": "node test/*.test.js | tap-spec",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "keywords": [
@@ -12,9 +12,9 @@
   "author": "Remy Sharp",
   "license": "UNLICENSED",
   "devDependencies": {
-    "tap-spec": "^4.0.2",
-    "tape": "^4.0.1",
-    "semantic-release": "^4.1.0"
+    "semantic-release": "^4.1.0",
+    "tap-spec": "^2.2.2",
+    "tape": "^4.0.1"
   },
   "dependencies": {
     "debug": "^2.2.0",
