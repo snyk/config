@@ -6,10 +6,10 @@ cache:
 notifications:
   email: false
 node_js:
-  - iojs-v2
-  - iojs-v1
+  # - iojs-v2
+  # - iojs-v1
   - '0.12'
-  - '0.10'
+  # - '0.10'
 before_install:
   - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
   - npm i -g npm@^2.0.0

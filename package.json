@@ -3,7 +3,7 @@
   "description": "Config setup for snyk shared across projects",
   "main": "lib/index.js",
   "scripts": {
-    "test": "node test/*.test.js | tap-spec && bash -c \"node -e 'process.exit(process.argv[1])' ${PIPESTATUS[0]}\"",
+    "test": "node test/*.test.js | tap-spec && node -e 'console.log(process.argv[1])' ${PIPESTATUS[0]}",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "keywords": [
