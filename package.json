@@ -2,7 +2,6 @@
   "name": "@snyk/config",
   "description": "Config setup for snyk shared across projects",
   "main": "lib/index.js",
-  "version": "3.0.0",
   "scripts": {
     "test": "node test/*.test.js | tap-spec",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
