@@ -47,7 +47,7 @@ console.log(config);
 ### cli
 
 ```shell
-$ SKYN_from=cli node app.js
+$ SNYK_from=cli node app.js
 => { from: "cli" }
 ```
 
