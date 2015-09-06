@@ -21,10 +21,37 @@ test('env values override', function (t) {
   t.equal(config.foo, '100', 'config matches');
   t.deepEqual(config.bar, { foo: '200' }, 'object matches');
 
+  process.env = {};
   t.end();
 });
 
 test('can be called without a path', function (t) {
   t.ok(require('../')(__dirname), 'config loaded without a path');
+  t.end();
+});
+
+test('env truthy correctly parsed', function (t) {
+  process.env.SNYK_foo = 'TRUE'; // jshint ignore:line
+  process.env.SNYK_bar = 'FALSE'; // jshint ignore:line
+  process.env.SNYK_zoo = 'false'; // jshint ignore:line
+
+  var config = require('../')(__dirname + '/fixtures/one');
+
+  t.equal(config.foo, true, 'truth config matches');
+  t.equal(config.bar, false, 'false config matches');
+  t.equal(config.zoo, 'false', 'strings left as is');
+
+  process.env = {};
+
+  t.end();
+});
+
+test('arg truthy correctly parsed', function (t) {
+  var config = require('../')(__dirname + '/fixtures/one');
+
+  t.equal(config.afoo, true, 'truth config matches');
+  t.ok(!config.abar, 'false config matches');
+  t.equal(config.azoo, 'true', 'strings left as is');
+
   t.end();
 });
