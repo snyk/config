@@ -1,5 +1,5 @@
 {
-  "name": "@snyk/config",
+  "name": "snyk-config",
   "description": "Config setup for snyk shared across projects",
   "main": "lib/index.js",
   "scripts": {
