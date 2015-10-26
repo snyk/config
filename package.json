@@ -3,7 +3,7 @@
   "description": "Config setup for snyk shared across projects",
   "main": "lib/index.js",
   "scripts": {
-    "test": "node test/*.test.js --afoo --azoo='true' | tap-spec",
+    "test": "snyk test -q && node test/*.test.js --afoo --azoo='true' | tap-spec",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "keywords": [
@@ -13,6 +13,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "semantic-release": "^4.1.0",
+    "snyk": "^0.3.2",
     "tap-spec": "^2.2.2",
     "tape": "^4.0.1"
   },
