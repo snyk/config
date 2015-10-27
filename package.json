@@ -10,7 +10,7 @@
     "config"
   ],
   "author": "Remy Sharp",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "devDependencies": {
     "semantic-release": "^4.1.0",
     "tap-spec": "^2.2.2",
