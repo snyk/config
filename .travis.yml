@@ -13,10 +13,8 @@ node_js:
 before_install:
   - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
   - npm i -g npm@^2.0.0
-  - npm install snyk
 before_script:
   - npm prune
-  - snyk auth ${SNYK_API_KEY} -q
   - 'curl -Lo travis_after_all.py https://git.io/vLSON'
 after_success:
   - python travis_after_all.py

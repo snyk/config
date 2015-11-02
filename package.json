@@ -13,7 +13,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "semantic-release": "^4.1.0",
-    "snyk": "^0.3.2",
+    "snyk": "^1.1.0",
     "tap-spec": "^2.2.2",
     "tape": "^4.0.1"
   },
