@@ -4,7 +4,7 @@
   "main": "lib/index.js",
   "scripts": {
     "lint": "jscs lib/*.js -v",
-    "test": "npm run lint && snyk test > /dev/null && tap test/*.test.js",
+    "test": "npm run lint && snyk test > /dev/null && tap test/*.test.js --cov",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "keywords": [
