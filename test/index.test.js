@@ -1,3 +1,6 @@
+// this is hacky, but we can't carry through args from tap, so we do this manually
+process.argv.push('--afoo', '--azoo=true');
+
 var test = require('tape');
 
 test('can be loaded twice', function (t) {

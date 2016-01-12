@@ -3,7 +3,8 @@
   "description": "Config setup for snyk shared across projects",
   "main": "lib/index.js",
   "scripts": {
-    "test": "snyk test && node test/*.test.js --afoo --azoo='true' | tap-spec",
+    "lint": "jscs lib/*.js -v",
+    "test": "npm run lint && snyk test > /dev/null && tap test/*.test.js",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "keywords": [
@@ -12,8 +13,10 @@
   "author": "Remy Sharp",
   "license": "Apache-2.0",
   "devDependencies": {
+    "jscs": "^2.8.0",
     "semantic-release": "^4.1.0",
     "snyk": "^1.1.0",
+    "tap": "^5.0.1",
     "tap-spec": "^2.2.2",
     "tape": "^4.0.1"
   },
