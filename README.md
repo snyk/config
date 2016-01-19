@@ -55,4 +55,4 @@ $ SNYK_from=cli node app.js
 
 * Values read from the environment or from the process arguments will *always* be strings. This is important to differentiate from values parsed in the config files as these can be `boolean` or `numbers`.
 * Environment property names strip *off* the preceding `SNYK_` string, so `SNYK_foo = 10` becomes `foo = "10"`
-* To create a nested object structure from the environment values, use two underscores: `SNYK__foo__bar = 10` becomes `foo = { bar: "10" }`
+* To create a nested object structure from the environment values, use two underscores: `SNYK_foo__bar = 10` becomes `foo = { bar: "10" }`
