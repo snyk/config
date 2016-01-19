@@ -5,12 +5,24 @@ var test = require('tape');
 
 test('can be loaded twice', function (t) {
   var config = require('../')(__dirname + '/fixtures/one');
-  t.equal(config.foo, 1, 'config matches');
-  t.equal(config.bar, 2, 'config matches');
+  t.equal(config.foo, 1, 'default config matches');
+  t.equal(config.bar, 2, 'local config matches');
+
+  t.equal(config.true_value, true, 'default true matches');
+  t.equal(config.false_value, false, 'local false matches');
+  t.equal(config.zero, 0, 'local zero matches');
+  t.equal(config.empty, "", 'local empty matches');
+
+  t.notEqual(config.true_value, 1, 'default true is not 1');
+  t.notEqual(config.false_value, 0, 'local false is not 0');
+  t.notEqual(config.zero_value, false, 'local zero is not false');
+  t.notEqual(config.empty, false, 'local empty is not false');  
 
   var config2 = require('../')(__dirname + '/fixtures/two');
   t.equal(config2.foo, 10, 'config2 matches');
   t.equal(config2.bar, 20, 'config2 matches');
+  t.equal(config2.zoo.bla, 123, 'nested config2 matches');
+  t.equal(config2.zoo.jar.xyz, "xyz", 'nested config2 matches');
 
   t.end();
 });
