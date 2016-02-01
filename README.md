@@ -21,7 +21,7 @@ var config = require('./config'); // matches config in app.js
 
 The config loader will look for the following values in order of priority, specifically, if a property appears in multiple layers of config (below) the first found is used:
 
-- process environment values prefixed with `SNYN_`
+- process environment values prefixed with `SNYK_`
 - process arguments
 - a `config.local.json` file in the root of your module
 - a `config.default.json` file in the root of your module
