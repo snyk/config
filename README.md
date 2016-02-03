@@ -51,8 +51,20 @@ $ SNYK_from=cli node app.js
 => { from: "cli" }
 ```
 
+### Nested object example
+
+```
+$ SNYK_ANALYTICS__enable=FALSE node test.js
+{ "ANALYTICS": { "enable": false } }
+
+$ cat test.js
+var config = require('snyk-config')('.'); // require configs from this dir
+console.log(config); // log out (as above)
+```
+
 ## Notes
 
 * Values read from the environment or from the process arguments will *always* be strings. This is important to differentiate from values parsed in the config files as these can be `boolean` or `numbers`.
 * Environment property names strip *off* the preceding `SNYK_` string, so `SNYK_foo = 10` becomes `foo = "10"`
 * To create a nested object structure from the environment values, use two underscores: `SNYK_foo__bar = 10` becomes `foo = { bar: "10" }`
+* To capture a boolean value from the environment, the value must be either `"TRUE"` or `"FALSE"` - as the env values are always strings.
