@@ -16,7 +16,7 @@ test('can be loaded twice', function (t) {
   t.notEqual(config.true_value, 1, 'default true is not 1');
   t.notEqual(config.false_value, 0, 'local false is not 0');
   t.notEqual(config.zero_value, false, 'local zero is not false');
-  t.notEqual(config.empty, false, 'local empty is not false');  
+  t.notEqual(config.empty, false, 'local empty is not false');
 
   var config2 = require('../')(__dirname + '/fixtures/two');
   t.equal(config2.foo, 10, 'config2 matches');
@@ -35,6 +35,17 @@ test('env values override', function (t) {
 
   t.equal(config.foo, '100', 'config matches');
   t.deepEqual(config.bar, { foo: '200' }, 'object matches');
+
+  process.env = {};
+  t.end();
+});
+
+test('env values merge', function (t) {
+  process.env.SNYK_foo__baz = "BAZ_ENV"; // jshint ignore:line
+  var config = require('../')(__dirname + '/fixtures/three');
+
+  t.deepEqual(config.foo, { bar: 'BAR', baz: 'BAZ_ENV' }, 'object merges');
+  console.log(config);
 
   process.env = {};
   t.end();
