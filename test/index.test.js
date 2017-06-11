@@ -25,8 +25,22 @@ test('env values override', function (t) {
   t.end();
 });
 
+test('secret config overrides local and default', function (t) {
+  var config = require('../')(__dirname + '/fixtures/three', {
+    secretConfig: __dirname + '/fixtures/three/config.secret.json',
+  });
+
+  t.equal(config.foo, 111, 'default value matches');
+  t.equal(config.bar, 42, 'secret value matches');
+  t.deepEqual(config.baz, { key1: 'value1', key2: 'value2' },
+              'nesting merge ok');
+
+  t.end();
+});
+
 test('can be called without a path', function (t) {
-  t.ok(require('../')(__dirname), 'config loaded without a path');
+  var config = require('../')(__dirname);
+  t.ok(config, 'config loaded without a path');
   t.end();
 });
 
