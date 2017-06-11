@@ -6,7 +6,9 @@ cache:
 notifications:
   email: false
 node_js:
-  - 6
+  - "6"
+  - "4"
+  - "0.12"
 before_install:
   - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
 before_script:
