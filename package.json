@@ -12,7 +12,7 @@
   "author": "Remy Sharp",
   "license": "Apache-2.0",
   "devDependencies": {
-    "semantic-release": "^4.1.0",
+    "semantic-release": "^6.3.6",
     "tap-spec": "^2.2.2",
     "tape": "^4.0.1"
   },
