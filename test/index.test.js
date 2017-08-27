@@ -69,3 +69,38 @@ test('arg truthy correctly parsed', function (t) {
 
   t.end();
 });
+
+test('env var substition throws on missing env vars', function (t) {
+  process.env.CONFIG_TEST_VALUE = undefined;
+
+  try {
+    require('../')(__dirname + '/fixtures/env');
+    t.fail('Should have thrown!');
+  } catch (err) {
+    t.ok(err, 'Throws on missing env vars');
+    t.end();
+  }
+});
+
+test('env var substitution', function (t) {
+  var testFixtureValue = 'a fixture value';
+  process.env.CONFIG_TEST_VALUE = testFixtureValue;
+
+  var config = require('../')(__dirname + '/fixtures/env');
+  var sourceData = require('./fixtures/env/config.default.json');
+
+  t.equal(config.regular, sourceData.regular, 'regular key matches');
+
+  var replacedValue =
+    sourceData.nested.toBeReplaced.replace(/\${CONFIG_TEST_VALUE}/g,
+                                           testFixtureValue);
+  t.equal(config.nested.toBeReplaced, replacedValue,
+          'nested substitution works');
+
+  replacedValue = sourceData.toBeReplaced.replace(/\${CONFIG_TEST_VALUE}/g,
+                                                  testFixtureValue);
+  t.equal(config.toBeReplaced, replacedValue,
+          'substitution works');
+
+  t.end();
+});
