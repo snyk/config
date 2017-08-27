@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "nconf": "^0.7.2",
+    "nconf": "^0.8.0",
     "path-is-absolute": "^1.0.0"
   },
   "repository": {
