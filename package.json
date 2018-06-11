@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "debug": "^3.1.0",
+    "lodash": "^4.17.5",
     "nconf": "^0.10.0"
   },
   "repository": {
