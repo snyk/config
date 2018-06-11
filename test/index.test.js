@@ -15,14 +15,36 @@ test('can be loaded twice', function (t) {
 test('env values override', function (t) {
   process.env.SNYK_foo = 100; // jshint ignore:line
   process.env.SNYK_bar__foo = 200; // jshint ignore:line
+  process.env.SNYK_complex__colour = "red"; // jshint ignore:line
+  process.env.SNYK_complex__fruit = "apple"; // jshint ignore:line
+  process.env.SNYK_complex__nested__colour = "purple"; // jshint ignore:line
+  process.env.SNYK_complex__nested__nested__fruit = "banana"; // jshint ignore:line
   process.env.PORT = 8888; // jshint ignore:line
   var config = require('../')(__dirname + '/fixtures/one');
 
   t.equal(config.foo, '100', 'config matches');
   t.deepEqual(config.bar, { foo: '200' }, 'object matches');
+  t.deepEqual(config.complex,
+    {
+      animal: 'dog',
+      colour: 'red',
+      fruit: 'apple',
+      nested: {
+        animal: 'cat',
+        colour: 'purple',
+        nested: {
+          fruit: 'banana',
+        },
+      },
+    },
+    'complex object can be merged into');
 
   delete process.env.SNYK_foo;
   delete process.env.SNYK_bar__foo;
+  delete process.env.SNYK_complex__colour;
+  delete process.env.SNYK_complex__fruit;
+  delete process.env.SNYK_complex__nested__colour;
+  delete process.env.SNYK_complex__nested__nested__fruit;
   delete process.env.PORT;
 
   t.end();
