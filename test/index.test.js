@@ -22,8 +22,8 @@ test('env values override', function (t) {
   process.env.PORT = 8888; // jshint ignore:line
   var config = require('../')(__dirname + '/fixtures/one');
 
-  t.equal(config.foo, '100', 'config matches');
-  t.deepEqual(config.bar, { foo: '200' }, 'object matches');
+  t.equal(config.foo, 100, 'config matches');
+  t.deepEqual(config.bar, { foo: 200 }, 'object matches');
   t.deepEqual(config.complex,
     {
       animal: 'dog',
@@ -70,8 +70,8 @@ test('can be called without a path', function (t) {
 });
 
 test('env truthy correctly parsed', function (t) {
-  process.env.SNYK_foo = 'TRUE'; // jshint ignore:line
-  process.env.SNYK_bar = 'FALSE'; // jshint ignore:line
+  process.env.SNYK_foo = 'true'; // jshint ignore:line
+  process.env.SNYK_bar = 'false'; // jshint ignore:line
   process.env.SNYK_baz = true; // jshint ignore:line
   process.env.SNYK_zoo = false; // jshint ignore:line
 
