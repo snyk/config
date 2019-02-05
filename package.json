@@ -12,7 +12,6 @@
   "author": "Remy Sharp",
   "license": "Apache-2.0",
   "devDependencies": {
-    "semantic-release": "^6.3.6",
     "tap-spec": "^5.0.0",
     "tape": "^4.9.2"
   },
