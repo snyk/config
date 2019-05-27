@@ -134,3 +134,15 @@ test('env var substitution', function (t) {
 
   t.end();
 });
+
+test('disable config local', function (t) {
+  var config = require('../')(__dirname + '/fixtures/one', {
+    disableConfigLocal: true,
+  });
+
+  t.false(config.bar,
+    'did not load config.local, loaded only config.default');
+  t.equal(config.foo, 1, 'loaded config.default');
+
+  t.end();
+});
