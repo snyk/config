@@ -4,7 +4,9 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "node test/*.test.js --afoo --azoo='true' | tap-spec",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "keywords": [
     "config"
@@ -18,10 +20,12 @@
   "dependencies": {
     "debug": "^3.1.0",
     "lodash": "^4.17.11",
-    "nconf": "^0.10.0"
+    "nconf": "^0.10.0",
+    "snyk": "^1.190.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/snyk/config.git"
-  }
+  },
+  "snyk": true
 }
