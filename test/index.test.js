@@ -19,11 +19,14 @@ test('env values override', function (t) {
   process.env.SNYK_complex__fruit = "apple"; // jshint ignore:line
   process.env.SNYK_complex__nested__colour = "purple"; // jshint ignore:line
   process.env.SNYK_complex__nested__nested__fruit = "banana"; // jshint ignore:line
+  // NOTE: NConf is VERY specific about how Arrays are defined
+  process.env.SNYK_complex__array = '[1, 20, "foo"]'; // jshint ignore:line
+  process.env.SNYK_complex__notArray = "[1, 20, 'foo']"; // jshint ignore:line
   process.env.PORT = 8888; // jshint ignore:line
   var config = require('../')(__dirname + '/fixtures/one');
 
-  t.equal(config.foo, '100', 'config matches');
-  t.deepEqual(config.bar, { foo: '200' }, 'object matches');
+  t.equal(config.foo, 100, 'config matches');
+  t.deepEqual(config.bar, { foo: 200 }, 'object matches');
   t.deepEqual(config.complex,
     {
       animal: 'dog',
@@ -36,6 +39,8 @@ test('env values override', function (t) {
           fruit: 'banana',
         },
       },
+      array: [1, 20, 'foo'],
+      notArray: '[1, 20, \'foo\']',
     },
     'complex object can be merged into');
 
