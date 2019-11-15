@@ -8,8 +8,7 @@
     "watch": "tsc -w",
     "prepare": "npm run build",
     "test": "node test/*.test.js --afoo --azoo='true' | tap-spec",
-    "format": "prettier --write '{lib,test}/**/*.?s'",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "format": "prettier --write '{lib,test}/**/*.?s'"
   },
   "keywords": [
     "config"
