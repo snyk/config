@@ -21,6 +21,7 @@
     "prettier/@typescript-eslint"
   ],
   "rules": {
+    "@typescript-eslint/no-use-before-define": "warn",
     "@typescript-eslint/explicit-function-return-type": "error",
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/await-thenable": "error",

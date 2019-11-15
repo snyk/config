@@ -1,8 +1,12 @@
-const debug = require('debug')('snyk:config');
-const nconf = require('nconf');
+import * as debugFactory from 'debug';
+import * as nconf from 'nconf';
+import * as path from 'path';
+import * as _ from 'lodash';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 require('./nconf-truth');
-const path = require('path');
-const _ = require('lodash');
+
+const debug = debugFactory('snyk:config');
 
 export type Json =
   | string
@@ -70,7 +74,7 @@ export function loadConfig(
 }
 
 // recursively replace ${VAL} in config values with process.env.VAL
-function substituteEnvVarValues(config) {
+function substituteEnvVarValues(config): void {
   Object.keys(config).forEach(function(key) {
     // recurse through nested objects
     if (typeof config[key] === 'object') {

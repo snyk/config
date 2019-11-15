@@ -3,9 +3,13 @@
  */
 
 import * as nconf from 'nconf';
-const common = require('nconf/lib/nconf/common');
+import * as common from 'nconf/lib/nconf/common';
 
-nconf.Env.prototype.loadEnv = function() {
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore intentionally monkey-patching internals
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+nconf.Env.prototype.loadEnv = function(): any {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   this.readOnly = false;
@@ -28,6 +32,8 @@ nconf.Env.prototype.loadEnv = function() {
       }
 
       if (self.separator) {
+        // spread would be better here; maybe next time...
+        // eslint-disable-next-line prefer-spread
         self.set(common.key.apply(common, key.split(self.separator)), value);
       } else {
         self.set(key, value);
