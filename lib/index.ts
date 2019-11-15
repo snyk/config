@@ -4,7 +4,7 @@ require('./nconf-truth');
 var path = require('path');
 var _ = require('lodash');
 
-module.exports = function(dir, options) {
+export = function(dir, options) {
   if (!dir) {
     dir = '';
   }
@@ -49,7 +49,7 @@ module.exports = function(dir, options) {
 
   substituteEnvVarValues(config);
 
-  debug('loading from %s', dir, JSON.stringify(config, '', 2));
+  debug('loading from %s', dir, JSON.stringify(config, null, 2));
 
   return config;
 };

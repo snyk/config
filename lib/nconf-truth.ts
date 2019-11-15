@@ -2,7 +2,7 @@
  * monkey patch nconf to support TRUE & FALSE on env & arg to port to bool
  */
 
-var nconf = require('nconf');
+import * as nconf from 'nconf';
 var common = require('nconf/lib/nconf/common');
 
 nconf.Env.prototype.loadEnv = function() {
@@ -20,7 +20,7 @@ nconf.Env.prototype.loadEnv = function() {
       }
     })
     .forEach(function(key) {
-      var value = process.env[key];
+      var value: string | undefined | boolean = process.env[key];
       if (value === 'TRUE' || value === 'true') {
         value = true;
       } else if (value === 'FALSE' || value === 'false') {
