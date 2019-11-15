@@ -30,11 +30,18 @@ export function loadConfig(
 
   options = options || {};
   const secretConfig =
-    options.secretConfig || path.resolve(dir, 'config.secret.json');
+    options.secretConfig ||
+    process.env['CONFIG_SECRET_FILE'] ||
+    path.resolve(dir, 'config.secret.json');
 
   if (!path.isAbsolute(dir)) {
     throw new Error('config requires absolute path to read from');
   }
+
+  const serviceEnv = process.env['SERVICE_ENV'];
+  const localConfig = serviceEnv ? serviceEnv : 'local';
+  const localConfigPath = path.resolve(dir, `config.${localConfig}.json`);
+  debug('dir: %s, local: %s, secret: %s', dir, localConfigPath, secretConfig);
 
   const snykMatch = /^SNYK_.*$/;
 
@@ -45,7 +52,7 @@ export function loadConfig(
   });
   nconf.argv();
   nconf.file('secret', { file: path.resolve(secretConfig) });
-  nconf.file('local', { file: path.resolve(dir, 'config.local.json') });
+  nconf.file('local', { file: localConfigPath });
   nconf.file('default', { file: path.resolve(dir, 'config.default.json') });
 
   const config = nconf.get();

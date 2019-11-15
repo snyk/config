@@ -1,5 +1,6 @@
 const { loadConfig } = require('../');
-var test = require('tape');
+const path = require('path');
+const test = require('tape');
 
 test('can be loaded twice', function(t) {
   var config = loadConfig(__dirname + '/fixtures/one');
@@ -143,5 +144,21 @@ test('env var substitution', function(t) {
   );
   t.equal(config.toBeReplaced, replacedValue, 'substitution works');
 
+  t.end();
+});
+
+test('env overrides for which files to read', (t) => {
+  const servEnv = __dirname + '/fixtures/serv-env';
+  process.env.SERVICE_ENV = 'foo';
+  process.env.CONFIG_SECRET_FILE = path.resolve(
+    servEnv,
+    'config.super-secret.json',
+  );
+  const config = loadConfig(servEnv);
+  t.equal(config.secret, 42);
+  t.equal(config.source, 'from-foo');
+
+  delete process.env.SERVICE_ENV;
+  delete process.env.CONFIG_SECRET_FILE;
   t.end();
 });
