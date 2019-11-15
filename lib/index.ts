@@ -4,7 +4,7 @@ require('./nconf-truth');
 var path = require('path');
 var _ = require('lodash');
 
-export = function(dir, options) {
+export function loadConfig(dir, options) {
   if (!dir) {
     dir = '';
   }
@@ -52,7 +52,7 @@ export = function(dir, options) {
   debug('loading from %s', dir, JSON.stringify(config, null, 2));
 
   return config;
-};
+}
 
 // recursively replace ${VAL} in config values with process.env.VAL
 function substituteEnvVarValues(config) {
