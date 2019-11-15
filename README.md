@@ -10,7 +10,7 @@ own `config.ts` file that can be cached by the require system and called *withou
 
 ```typescript
 // config.ts
-import { loadConfig } from '@snyk/config';
+import { loadConfig } from 'snyk-config';
 export const config = loadConfig('<directory with config files>');
 
 // in app.ts
@@ -52,7 +52,7 @@ first found is used:
 ### app.js
 
 ```typescript
-import { loadConfig } from '@snyk/config';
+import { loadConfig } from 'snyk-config';
 // as we're in the same directory as the config.local.json, there's no arg
 const config = loadConfig();
 console.log(config);
