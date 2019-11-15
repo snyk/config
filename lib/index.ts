@@ -1,8 +1,8 @@
-var debug = require('debug')('snyk:config');
-var nconf = require('nconf');
+const debug = require('debug')('snyk:config');
+const nconf = require('nconf');
 require('./nconf-truth');
-var path = require('path');
-var _ = require('lodash');
+const path = require('path');
+const _ = require('lodash');
 
 export type Json =
   | string
@@ -25,14 +25,14 @@ export function loadConfig(
   }
 
   options = options || {};
-  var secretConfig =
+  const secretConfig =
     options.secretConfig || path.resolve(dir, 'config.secret.json');
 
   if (!path.isAbsolute(dir)) {
     throw new Error('config requires absolute path to read from');
   }
 
-  var snykMatch = /^SNYK_.*$/;
+  const snykMatch = /^SNYK_.*$/;
 
   nconf.env({
     separator: '__',
@@ -44,7 +44,7 @@ export function loadConfig(
   nconf.file('local', { file: path.resolve(dir, 'config.local.json') });
   nconf.file('default', { file: path.resolve(dir, 'config.default.json') });
 
-  var config = nconf.get();
+  const config = nconf.get();
 
   // strip prefix from env vars in config
   Object.keys(config).forEach(function(key) {
@@ -80,7 +80,7 @@ function substituteEnvVarValues(config) {
     // replace /\${.*?}/g in strings with env var if such exists
     if (typeof config[key] === 'string') {
       config[key] = config[key].replace(/(\${.*?})/g, function(_, match) {
-        var val = match.slice(2, -1); // ditch the wrappers
+        const val = match.slice(2, -1); // ditch the wrappers
 
         // explode if env var is missing
         if (process.env[val] === undefined) {

@@ -7,6 +7,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "prepare": "npm run build",
+    "lint": "eslint 'lib/**/*.?s'",
     "test": "node test/*.test.js --afoo --azoo='true' | tap-spec",
     "format": "prettier --write '{lib,test}/**/*.?s'"
   },
@@ -17,6 +18,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/node": "^6.14.9",
+    "@typescript-eslint/eslint-plugin": "^2.7.0",
+    "@typescript-eslint/parser": "^2.7.0",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
     "prettier": "^1.19.1",
     "tap-spec": "^5.0.0",
     "tape": "^4.11.0",

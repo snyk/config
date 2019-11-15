@@ -3,10 +3,10 @@
  */
 
 import * as nconf from 'nconf';
-var common = require('nconf/lib/nconf/common');
+const common = require('nconf/lib/nconf/common');
 
 nconf.Env.prototype.loadEnv = function() {
-  var self = this;
+  const self = this;
 
   this.readOnly = false;
   Object.keys(process.env)
@@ -20,7 +20,7 @@ nconf.Env.prototype.loadEnv = function() {
       }
     })
     .forEach(function(key) {
-      var value: string | undefined | boolean = process.env[key];
+      let value: string | undefined | boolean = process.env[key];
       if (value === 'TRUE' || value === 'true') {
         value = true;
       } else if (value === 'FALSE' || value === 'false') {
