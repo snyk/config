@@ -1,4 +1,5 @@
 sudo: false
+dist: bionic
 language: node_js
 cache:
   directories:
@@ -8,8 +9,6 @@ notifications:
 node_js:
   - "10"
   - "8"
-  - "6"
-  - "4"
 install:
   - npm install
 script:
