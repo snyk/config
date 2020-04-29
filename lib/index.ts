@@ -1,7 +1,7 @@
 import * as debugFactory from 'debug';
 import * as nconf from 'nconf';
 import * as path from 'path';
-import * as _ from 'lodash';
+import * as _ from '@snyk/lodash';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 require('./nconf-truth');

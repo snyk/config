@@ -30,8 +30,8 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
+    "@snyk/lodash": "4.17.15-patch",
     "debug": "^4.1.1",
-    "lodash": "^4.17.15",
     "nconf": "^0.10.0"
   },
   "repository": {
