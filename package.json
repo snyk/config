@@ -17,7 +17,6 @@
   "author": "Remy Sharp",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.147",
     "@types/nconf": "^0.10.0",
     "@types/node": "^6.14.9",
     "@typescript-eslint/eslint-plugin": "^2.7.0",
@@ -30,8 +29,8 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "@snyk/lodash": "4.17.15-patch",
     "debug": "^4.1.1",
+    "lodash.merge": "^4.6.2",
     "nconf": "^0.10.0"
   },
   "repository": {

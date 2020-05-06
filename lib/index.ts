@@ -1,7 +1,7 @@
 import * as debugFactory from 'debug';
 import * as nconf from 'nconf';
 import * as path from 'path';
-import * as _ from '@snyk/lodash';
+import * as _merge from 'lodash.merge';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 require('./nconf-truth');
@@ -65,7 +65,7 @@ export function loadConfig(
         typeof config[trimmedKey] === 'object' &&
         typeof config[key] === 'object'
       ) {
-        config[trimmedKey] = _.merge(config[trimmedKey], config[key]);
+        config[trimmedKey] = _merge(config[trimmedKey], config[key]);
       } else {
         config[trimmedKey] = config[key];
       }
