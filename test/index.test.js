@@ -54,6 +54,23 @@ test('env values override', function(t) {
   t.end();
 });
 
+test('env values strings are trimmed', function(t) {
+  process.env.SNYK_whitespace = ' string '; // jshint ignore:line
+  process.env.SNYK_bar__whitespace = ' string '; // jshint ignore:line
+
+  var config = loadConfig(__dirname + '/fixtures/one');
+  t.equal(config.whitespace, 'string', 'whitespace gets stripped');
+  t.deepEqual(
+    config.bar,
+    { whitespace: 'string' },
+    'whitespace gets stripped even in objects',
+  );
+
+  delete process.env.SNYK_whitespace;
+  delete process.env.SNYK_bar__whitespace;
+  t.end();
+});
+
 test('secret config overrides local and default', function(t) {
   var config = loadConfig(__dirname + '/fixtures/three', {
     secretConfig: __dirname + '/fixtures/three/config.secret.json',

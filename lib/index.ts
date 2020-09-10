@@ -107,7 +107,7 @@ function substituteEnvVarValues(config): void {
         }
 
         return process.env[val];
-      });
+      }).trim();
     }
   });
 }
