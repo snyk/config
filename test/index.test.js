@@ -162,3 +162,10 @@ test('env overrides for which files to read', (t) => {
   delete process.env.CONFIG_SECRET_FILE;
   t.end();
 });
+
+test('type can be changed from int to string', (t) => {
+  const config = loadConfig(__dirname + '/fixtures/type-change');
+
+  t.equal(config.foo, "bar", '10 becomes bar')
+  t.end()
+});
