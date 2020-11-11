@@ -5,7 +5,7 @@
  *
  */
 
-var common = require('../common');
+import * as common from '../common';
 
 //
 // ### function Memory (options)
@@ -15,11 +15,11 @@ var common = require('../common');
 //
 // e.g. `my:nested:key` ==> `{ my: { nested: { key: } } }`
 //
-var Memory = exports.Memory = function (options) {
-  options       = options || {};
-  this.type     = 'memory';
-  this.store    = {};
-  this.mtimes   = {};
+export const Memory = function(this: any, options: any = {}) {
+  options = options || {};
+  this.type = 'memory';
+  this.store = {};
+  this.mtimes = {};
   this.readOnly = false;
   this.loadFrom = options.loadFrom || null;
   this.logicalSeparator = options.logicalSeparator || ':';
@@ -35,9 +35,9 @@ var Memory = exports.Memory = function (options) {
 // #### @key {string} Key to retrieve for this instance.
 // Retrieves the value for the specified key (if any).
 //
-Memory.prototype.get = function (key) {
-  var target = this.store,
-      path   = common.path(key, this.logicalSeparator);
+Memory.prototype.get = function(key) {
+  let target = this.store,
+    path = common.path(key, this.logicalSeparator);
 
   //
   // Scope into the object to get the appropriate nested context
@@ -60,13 +60,13 @@ Memory.prototype.get = function (key) {
 // #### @value {literal|Object} Value for the specified key
 // Sets the `value` for the specified `key` in this instance.
 //
-Memory.prototype.set = function (key, value) {
+Memory.prototype.set = function(key, value) {
   if (this.readOnly) {
     return false;
   }
 
-  var target = this.store,
-      path   = common.path(key, this.logicalSeparator);
+  let target = this.store,
+    path = common.path(key, this.logicalSeparator);
 
   if (path.length === 0) {
     //
@@ -74,8 +74,7 @@ Memory.prototype.set = function (key, value) {
     //
     if (!value || typeof value !== 'object') {
       return false;
-    }
-    else {
+    } else {
       this.reset();
       this.store = value;
       return true;
@@ -113,14 +112,14 @@ Memory.prototype.set = function (key, value) {
 // #### @key {string} Key to remove from this instance
 // Removes the value for the specified `key` from this instance.
 //
-Memory.prototype.clear = function (key) {
+Memory.prototype.clear = function(key) {
   if (this.readOnly) {
     return false;
   }
 
-  var target = this.store,
-      value  = target,
-      path   = common.path(key, this.logicalSeparator);
+  let target = this.store,
+    value = target,
+    path = common.path(key, this.logicalSeparator);
 
   //
   // Remove the key from the set of `mtimes` (modified times)
@@ -153,7 +152,7 @@ Memory.prototype.clear = function (key) {
 // at `key`. If the existing value `key` is not an Object, it will be
 // completely overwritten.
 //
-Memory.prototype.merge = function (key, value) {
+Memory.prototype.merge = function(key, value) {
   if (this.readOnly) {
     return false;
   }
@@ -166,10 +165,10 @@ Memory.prototype.merge = function (key, value) {
     return this.set(key, value);
   }
 
-  var self    = this,
-      target  = this.store,
-      path    = common.path(key, this.logicalSeparator),
-      fullKey = key;
+  let self = this,
+    target = this.store,
+    path = common.path(key, this.logicalSeparator),
+    fullKey = key;
 
   //
   // Update the `mtime` (modified time) of the key
@@ -201,8 +200,11 @@ Memory.prototype.merge = function (key, value) {
     return true;
   }
 
-  return Object.keys(value).every(function (nested) {
-    return self.merge(common.keyed(self.logicalSeparator, fullKey, nested), value[nested]);
+  return Object.keys(value).every(function(nested) {
+    return self.merge(
+      common.keyed(self.logicalSeparator, fullKey, nested),
+      value[nested],
+    );
   });
 };
 
@@ -210,13 +212,13 @@ Memory.prototype.merge = function (key, value) {
 // ### function reset (callback)
 // Clears all keys associated with this instance.
 //
-Memory.prototype.reset = function () {
+Memory.prototype.reset = function() {
   if (this.readOnly) {
     return false;
   }
 
   this.mtimes = {};
-  this.store  = {};
+  this.store = {};
   return true;
 };
 
@@ -224,6 +226,6 @@ Memory.prototype.reset = function () {
 // ### function loadSync
 // Returns the store managed by this instance
 //
-Memory.prototype.loadSync = function () {
+Memory.prototype.loadSync = function() {
   return this.store || {};
 };

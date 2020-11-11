@@ -5,8 +5,8 @@
  *
  */
 
-var async = require('async'),
-    common = require('./common');
+import * as async from 'async';
+import * as common from './common';
 
 //
 // ### function Provider (options)
@@ -14,13 +14,14 @@ var async = require('async'),
 // Constructor function for the Provider object responsible
 // for exposing the pluggable storage features of `nconf`.
 //
-var Provider = exports.Provider = function (options) {
+
+export const Provider = function(this: any, options = {}) {
   //
   // Setup default options for working with `stores`,
   // `overrides`, `process.env` and `process.argv`.
   //
-  options       = options || {};
-  this.stores  = {};
+  options = options || {};
+  this.stores = {};
   this.sources = [];
   this.init(options);
 };
@@ -30,9 +31,9 @@ var Provider = exports.Provider = function (options) {
 // in this instance
 //
 
-['argv', 'env'].forEach(function (type) {
-  Provider.prototype[type] = function () {
-    var args = [type].concat(Array.prototype.slice.call(arguments));
+['env'].forEach(function(type) {
+  Provider.prototype[type] = function() {
+    const args = [type].concat(Array.prototype.slice.call(arguments));
     return this.add.apply(this, args);
   };
 });
@@ -48,15 +49,12 @@ var Provider = exports.Provider = function (options) {
 //    nconf.file('userconfig', 'path/to/config/file');
 //    nconf.file('userconfig', { file: '.jitsuconf', search: true });
 //
-Provider.prototype.file = function (key, options) {
+Provider.prototype.file = function(key, options) {
   if (arguments.length == 1) {
     options = typeof key === 'string' ? { file: key } : key;
     key = 'file';
-  }
-  else {
-    options = typeof options === 'string'
-      ? { file: options }
-      : options;
+  } else {
+    options = typeof options === 'string' ? { file: options } : options;
   }
 
   options.type = 'file';
@@ -67,8 +65,8 @@ Provider.prototype.file = function (key, options) {
 // Define wrapper functions for using
 // overrides and defaults
 //
-['defaults', 'overrides'].forEach(function (type) {
-  Provider.prototype[type] = function (options) {
+['defaults', 'overrides'].forEach(function(type) {
+  Provider.prototype[type] = function(options) {
     options = options || {};
     if (!options.type) {
       options.type = 'literal';
@@ -89,17 +87,17 @@ Provider.prototype.file = function (key, options) {
 //    provider.use('file');
 //    provider.use('file', { type: 'file', filename: '/path/to/userconf' })
 //
-Provider.prototype.use = function (name, options) {
-  options  = options      || {};
+Provider.prototype.use = function(name, options) {
+  options = options || {};
 
-  function sameOptions (store) {
-    return Object.keys(options).every(function (key) {
+  function sameOptions(store) {
+    return Object.keys(options).every(function(key) {
       return options[key] === store[key];
     });
   }
 
-  var store = this.stores[name],
-      update = store && !sameOptions(store);
+  const store = this.stores[name],
+    update = store && !sameOptions(store);
 
   if (!store || update) {
     if (update) {
@@ -122,11 +120,11 @@ Provider.prototype.use = function (name, options) {
 //    provider.add('memory');
 //    provider.add('userconf', { type: 'file', filename: '/path/to/userconf' })
 //
-Provider.prototype.add = function (name, options, usage) {
-  options  = options      || {};
-  var type = options.type || name;
+Provider.prototype.add = function(name, options, usage) {
+  options = options || {};
+  const type = options.type || name;
 
-  if (!require('../nconf')[common.capitalize(type)]) {
+  if (!require('../nconf').default[common.capitalize(type)]) {
     throw new Error('Cannot add store with unknown type: ' + type);
   }
 
@@ -146,7 +144,7 @@ Provider.prototype.add = function (name, options, usage) {
 // are allowed to pass in a type argument (e.g. `memory`) as name if
 // this was used in the call to `.add()`.
 //
-Provider.prototype.remove = function (name) {
+Provider.prototype.remove = function(name) {
   delete this.stores[name];
   return this;
 };
@@ -158,8 +156,10 @@ Provider.prototype.remove = function (name) {
 // Creates a store of the specified `type` using the
 // specified `options`.
 //
-Provider.prototype.create = function (type, options, usage) {
-  return new (require('../nconf')[common.capitalize(type.toLowerCase())])(options, usage);
+Provider.prototype.create = function(type, options, usage) {
+  return new (require('../nconf').default[
+    common.capitalize(type.toLowerCase())
+  ])(options, usage);
 };
 
 //
@@ -168,8 +168,8 @@ Provider.prototype.create = function (type, options, usage) {
 // Initializes this instance with additional `stores` or `sources` in the
 // `options` supplied.
 //
-Provider.prototype.init = function (options) {
-  var self = this;
+Provider.prototype.init = function(options) {
+  const self = this;
 
   //
   // Add any stores passed in through the options
@@ -177,13 +177,11 @@ Provider.prototype.init = function (options) {
   //
   if (options.type) {
     this.add(options.type, options);
-  }
-  else if (options.store) {
+  } else if (options.store) {
     this.add(options.store.name || options.store.type, options.store);
-  }
-  else if (options.stores) {
-    Object.keys(options.stores).forEach(function (name) {
-      var store = options.stores[name];
+  } else if (options.stores) {
+    Object.keys(options.stores).forEach(function(name) {
+      const store = options.stores[name];
       self.add(store.name || name || store.type, store);
     });
   }
@@ -192,12 +190,15 @@ Provider.prototype.init = function (options) {
   // Add any read-only sources to this instance
   //
   if (options.source) {
-    this.sources.push(this.create(options.source.type || options.source.name, options.source));
-  }
-  else if (options.sources) {
-    Object.keys(options.sources).forEach(function (name) {
-      var source = options.sources[name];
-      self.sources.push(self.create(source.type || source.name || name, source));
+    this.sources.push(
+      this.create(options.source.type || options.source.name, options.source),
+    );
+  } else if (options.sources) {
+    Object.keys(options.sources).forEach(function(name) {
+      const source = options.sources[name];
+      self.sources.push(
+        self.create(source.type || source.name || name, source),
+      );
     });
   }
 };
@@ -208,7 +209,7 @@ Provider.prototype.init = function (options) {
 // #### @callback {function} **Optional** Continuation to respond to when complete.
 // Retrieves the value for the specified key (if any).
 //
-Provider.prototype.get = function (key, callback) {
+Provider.prototype.get = function(key, callback) {
   if (typeof key === 'function') {
     // Allow a * key call to be made
     callback = key;
@@ -228,53 +229,64 @@ Provider.prototype.get = function (key, callback) {
   // slightly more complicated because we do not need to traverse
   // the entire set of stores, but up until there is a defined value.
   //
-  var current = 0,
-      names = Object.keys(this.stores),
-      self = this,
-      response,
-      mergeObjs = [];
+  let current = 0,
+    names = Object.keys(this.stores),
+    self = this,
+    response,
+    mergeObjs: any[] = [];
 
-  async.whilst(function () {
-    return typeof response === 'undefined' && current < names.length;
-  }, function (next) {
-    var store = self.stores[names[current]];
-    current++;
+  async.whilst(
+    function() {
+      return typeof response === 'undefined' && current < names.length;
+    },
+    function(next) {
+      const store = self.stores[names[current]];
+      current++;
 
-    if (store.get.length >= 2) {
-      return store.get(key, function (err, value) {
-        if (err) {
-          return next(err);
-        }
+      if (store.get.length >= 2) {
+        return store.get(key, function(err, value) {
+          if (err) {
+            return next(err);
+          }
 
-        response = value;
+          response = value;
 
-        // Merge objects if necessary
-        if (response && typeof response === 'object' && !Array.isArray(response)) {
-          mergeObjs.push(response);
-          response = undefined;
-        }
+          // Merge objects if necessary
+          if (
+            response &&
+            typeof response === 'object' &&
+            !Array.isArray(response)
+          ) {
+            mergeObjs.push(response);
+            response = undefined;
+          }
 
-        next();
-      });
-    }
+          next();
+        });
+      }
 
-    response = store.get(key);
+      response = store.get(key);
 
-    // Merge objects if necessary
-    if (response && typeof response === 'object' && !Array.isArray(response)) {
-      mergeObjs.push(response);
-      response = undefined;
-    }
+      // Merge objects if necessary
+      if (
+        response &&
+        typeof response === 'object' &&
+        !Array.isArray(response)
+      ) {
+        mergeObjs.push(response);
+        response = undefined;
+      }
 
-    next();
-  }, function (err) {
-    if (!err && mergeObjs.length) {
-      response = common.merge(mergeObjs.reverse());
-    }
-    return err ? callback(err) : callback(null, response);
-  });
+      next();
+    },
+    function(err) {
+      if (!err && mergeObjs.length) {
+        response = common.merge(mergeObjs.reverse());
+      }
+      return err ? callback(err) : callback(null, response);
+    },
+  );
 };
-
 
 //
 // ### function any (keys, callback)
@@ -282,8 +294,7 @@ Provider.prototype.get = function (key, callback) {
 // #### @callback {function} **Optional** Continuation to respond to when complete.
 // Retrieves the first truthy value (if any) for the specified list of keys.
 //
-Provider.prototype.any = function (keys, callback) {
-
+Provider.prototype.any = function(keys, callback) {
   if (!Array.isArray(keys)) {
     keys = Array.prototype.slice.call(arguments);
     if (keys.length > 0 && typeof keys[keys.length - 1] === 'function') {
@@ -298,8 +309,8 @@ Provider.prototype.any = function (keys, callback) {
   // on each key in turn.
   //
   if (!callback) {
-    var val;
-    for (var i = 0; i < keys.length; ++i) {
+    let val;
+    for (let i = 0; i < keys.length; ++i) {
       val = this._execute('get', 1, keys[i], callback);
       if (val) {
         return val;
@@ -308,29 +319,32 @@ Provider.prototype.any = function (keys, callback) {
     return null;
   }
 
-  var keyIndex = 0,
-      result,
-      self = this;
-  
-  async.whilst(function() {
-    return !result && keyIndex < keys.length;
-  }, function(next) {
-    var key = keys[keyIndex];
-    keyIndex++;
+  let keyIndex = 0,
+    result,
+    self = this;
 
-    self.get(key, function(err, v) {
-      if (err) {
-        next(err);
-      } else {
-        result = v;
-        next();
-      }
-    });
-  }, function(err) {
-    return err ? callback(err) : callback(null, result);
-  });
+  async.whilst(
+    function() {
+      return !result && keyIndex < keys.length;
+    },
+    function(next) {
+      const key = keys[keyIndex];
+      keyIndex++;
+
+      self.get(key, function(err, v) {
+        if (err) {
+          next(err);
+        } else {
+          result = v;
+          next();
+        }
+      });
+    },
+    function(err) {
+      return err ? callback(err) : callback(null, result);
+    },
+  );
 };
-
 
 //
 // ### function set (key, value, callback)
@@ -339,22 +353,21 @@ Provider.prototype.any = function (keys, callback) {
 // #### @callback {function} **Optional** Continuation to respond to when complete.
 // Sets the `value` for the specified `key` in this instance.
 //
-Provider.prototype.set = function (key, value, callback) {
+Provider.prototype.set = function(key, value, callback) {
   return this._execute('set', 2, key, value, callback);
 };
-
 
 //
 // ### function required (keys)
 // #### @keys {array} List of keys
 // Throws an error if any of `keys` has no value, otherwise returns `true`
-Provider.prototype.required = function (keys) {
+Provider.prototype.required = function(keys) {
   if (!Array.isArray(keys)) {
     throw new Error('Incorrect parameter, array expected');
   }
 
-  var missing = [];
-  keys.forEach(function(key) {
+  const missing: any[] = [];
+  keys.forEach(function(this: any, key) {
     if (typeof this.get(key) === 'undefined') {
       missing.push(key);
     }
@@ -365,7 +378,6 @@ Provider.prototype.required = function (keys) {
   } else {
     return this;
   }
-
 };
 
 //
@@ -373,7 +385,7 @@ Provider.prototype.required = function (keys) {
 // #### @callback {function} **Optional** Continuation to respond to when complete.
 // Clears all keys associated with this instance.
 //
-Provider.prototype.reset = function (callback) {
+Provider.prototype.reset = function(callback) {
   return this._execute('reset', 0, callback);
 };
 
@@ -383,7 +395,7 @@ Provider.prototype.reset = function (callback) {
 // #### @callback {function} **Optional** Continuation to respond to when complete.
 // Removes the value for the specified `key` from this instance.
 //
-Provider.prototype.clear = function (key, callback) {
+Provider.prototype.clear = function(key, callback) {
   return this._execute('clear', 1, key, callback);
 };
 
@@ -397,23 +409,30 @@ Provider.prototype.clear = function (key, callback) {
 // 1. If the existing value `key` is not an Object, it will be completely overwritten.
 // 2. If `key` is not supplied, then the `value` will be merged into the root.
 //
-Provider.prototype.merge = function () {
-  var self = this,
-      args = Array.prototype.slice.call(arguments),
-      callback = typeof args[args.length - 1] === 'function' && args.pop(),
-      value = args.pop(),
-      key = args.pop();
+Provider.prototype.merge = function() {
+  const self = this,
+    args = Array.prototype.slice.call(arguments),
+    callback = typeof args[args.length - 1] === 'function' && args.pop(),
+    value = args.pop(),
+    key = args.pop();
 
-  function mergeProperty (prop, next) {
+  function mergeProperty(prop, next) {
     return self._execute('merge', 2, prop, value[prop], next);
   }
 
   if (!key) {
     if (Array.isArray(value) || typeof value !== 'object') {
-      return onError(new Error('Cannot merge non-Object into top-level.'), callback);
+      return onError(
+        new Error('Cannot merge non-Object into top-level.'),
+        callback,
+      );
     }
 
-    return async.forEach(Object.keys(value), mergeProperty, callback || function () { })
+    return async.forEach(
+      Object.keys(value),
+      mergeProperty,
+      callback || function() {},
+    );
   }
 
   return this._execute('merge', 2, key, value, callback);
@@ -424,20 +443,22 @@ Provider.prototype.merge = function () {
 // #### @callback {function} Continuation to respond to when complete.
 // Responds with an Object representing all keys associated in this instance.
 //
-Provider.prototype.load = function (callback) {
-  var self = this;
+Provider.prototype.load = function(callback) {
+  const self = this;
 
-  function getStores () {
-    var stores = Object.keys(self.stores);
+  function getStores() {
+    const stores = Object.keys(self.stores);
     stores.reverse();
-    return stores.map(function (name) {
+    return stores.map(function(name) {
       return self.stores[name];
     });
   }
 
   function loadStoreSync(store) {
     if (!store.loadSync) {
-      throw new Error('nconf store ' + store.type + ' has no loadSync() method');
+      throw new Error(
+        'nconf store ' + store.type + ' has no loadSync() method',
+      );
     }
 
     return store.loadSync();
@@ -445,25 +466,25 @@ Provider.prototype.load = function (callback) {
 
   function loadStore(store, next) {
     if (!store.load && !store.loadSync) {
-      return next(new Error('nconf store ' + store.type + ' has no load() method'));
+      return next(
+        new Error('nconf store ' + store.type + ' has no load() method'),
+      );
     }
 
-    return store.loadSync
-      ? next(null, store.loadSync())
-      : store.load(next);
+    return store.loadSync ? next(null, store.loadSync()) : store.load(next);
   }
 
-  function loadBatch (targets, done) {
+  function loadBatch(targets, done?) {
     if (!done) {
       return common.merge(targets.map(loadStoreSync));
     }
 
-    async.map(targets, loadStore, function (err, objs) {
+    async.map(targets, loadStore, function(err, objs) {
       return err ? done(err) : done(null, common.merge(objs));
     });
   }
 
-  function mergeSources (data) {
+  function mergeSources(data) {
     //
     // If `data` was returned then merge it into
     // the system store.
@@ -471,13 +492,13 @@ Provider.prototype.load = function (callback) {
     if (data && typeof data === 'object') {
       self.use('sources', {
         type: 'literal',
-        store: data
+        store: data,
       });
     }
   }
 
-  function loadSources () {
-    var sourceHierarchy = self.sources.splice(0);
+  function loadSources() {
+    const sourceHierarchy = self.sources.splice(0);
     sourceHierarchy.reverse();
 
     //
@@ -490,7 +511,7 @@ Provider.prototype.load = function (callback) {
       return loadBatch(getStores());
     }
 
-    loadBatch(sourceHierarchy, function (err, data) {
+    loadBatch(sourceHierarchy, function(err, data) {
       if (err) {
         return callback(err);
       }
@@ -500,9 +521,7 @@ Provider.prototype.load = function (callback) {
     });
   }
 
-  return self.sources.length
-    ? loadSources()
-    : loadBatch(getStores(), callback);
+  return self.sources.length ? loadSources() : loadBatch(getStores(), callback);
 };
 
 //
@@ -515,24 +534,24 @@ Provider.prototype.load = function (callback) {
 // ignored.  Returns an object consisting of all of the data which was
 // actually saved.
 //
-Provider.prototype.save = function (value, callback) {
+Provider.prototype.save = function(value, callback) {
   if (!callback && typeof value === 'function') {
     callback = value;
     value = null;
   }
 
-  var self = this,
-      names = Object.keys(this.stores);
+  const self = this,
+    names = Object.keys(this.stores);
 
   function saveStoreSync(memo, name) {
-    var store = self.stores[name];
+    const store = self.stores[name];
 
     //
     // If the `store` doesn't have a `saveSync` method,
     // just ignore it and continue.
     //
     if (store.saveSync) {
-      var ret = store.saveSync();
+      const ret = store.saveSync();
       if (typeof ret == 'object' && ret !== null) {
         memo.push(ret);
       }
@@ -541,7 +560,7 @@ Provider.prototype.save = function (value, callback) {
   }
 
   function saveStore(memo, name, next) {
-    var store = self.stores[name];
+    const store = self.stores[name];
 
     //
     // If the `store` doesn't have a `save` or saveSync`
@@ -549,7 +568,7 @@ Provider.prototype.save = function (value, callback) {
     //
 
     if (store.save) {
-      return store.save(value, function (err, data) {
+      return store.save(value, function(err, data) {
         if (err) {
           return next(err);
         }
@@ -560,8 +579,7 @@ Provider.prototype.save = function (value, callback) {
 
         next(null, memo);
       });
-    }
-    else if (store.saveSync) {
+    } else if (store.saveSync) {
       memo.push(store.saveSync());
     }
 
@@ -577,7 +595,7 @@ Provider.prototype.save = function (value, callback) {
     return common.merge(names.reduce(saveStoreSync, []));
   }
 
-  async.reduce(names, [], saveStore, function (err, objs) {
+  async.reduce(names, [], saveStore, function(err, objs) {
     return err ? callback(err) : callback(null, common.merge(objs));
   });
 };
@@ -590,18 +608,17 @@ Provider.prototype.save = function (value, callback) {
 // Executes the specified `action` on all stores for this instance, ensuring a callback supplied
 // to a synchronous store function is still invoked.
 //
-Provider.prototype._execute = function (action, syncLength /* [arguments] */) {
-  var args = Array.prototype.slice.call(arguments, 2),
-      callback = typeof args[args.length - 1] === 'function' && args.pop(),
-      destructive = ['set', 'clear', 'merge', 'reset'].indexOf(action) !== -1,
-      self = this,
-      response,
-      mergeObjs = [],
-      keys = Object.keys(this.stores);
+Provider.prototype._execute = function(action, syncLength /* [arguments] */) {
+  let args = Array.prototype.slice.call(arguments, 2),
+    callback = typeof args[args.length - 1] === 'function' && args.pop(),
+    destructive = ['set', 'clear', 'merge', 'reset'].indexOf(action) !== -1,
+    self = this,
+    response,
+    mergeObjs: any[] = [],
+    keys = Object.keys(this.stores);
 
-
-  function runAction (name, next) {
-    var store = self.stores[name];
+  function runAction(name, next) {
+    const store = self.stores[name];
 
     if (destructive && store.readOnly) {
       return next();
@@ -613,14 +630,14 @@ Provider.prototype._execute = function (action, syncLength /* [arguments] */) {
   }
 
   if (callback) {
-    return async.forEach(keys, runAction, function (err) {
+    return async.forEach(keys, runAction, function(err) {
       return err ? callback(err) : callback();
     });
   }
 
-  keys.forEach(function (name) {
+  keys.forEach(function(name) {
     if (typeof response === 'undefined') {
-      var store = self.stores[name];
+      const store = self.stores[name];
 
       if (destructive && store.readOnly) {
         return;
@@ -629,7 +646,12 @@ Provider.prototype._execute = function (action, syncLength /* [arguments] */) {
       response = store[action].apply(store, args);
 
       // Merge objects if necessary
-      if (response && action === 'get' && typeof response === 'object' && !Array.isArray(response)) {
+      if (
+        response &&
+        action === 'get' &&
+        typeof response === 'object' &&
+        !Array.isArray(response)
+      ) {
         mergeObjs.push(response);
         response = undefined;
       }
@@ -641,7 +663,7 @@ Provider.prototype._execute = function (action, syncLength /* [arguments] */) {
   }
 
   return response;
-}
+};
 
 //
 // Throw the `err` if a callback is not supplied
