@@ -5,16 +5,16 @@
  *
  */
 
-var util = require('util'),
-    Memory = require('./memory').Memory
+import * as util from 'util';
+import { Memory } from './memory';
 
-var Literal = exports.Literal = function Literal (options) {
+export const Literal = function Literal(this: any, options) {
   Memory.call(this, options);
 
-  options       = options || {}
-  this.type     = 'literal';
+  options = options || {};
+  this.type = 'literal';
   this.readOnly = true;
-  this.store    = options.store || options;
+  this.store = options.store || options;
 };
 
 // Inherit from Memory store.
@@ -24,6 +24,6 @@ util.inherits(Literal, Memory);
 // ### function loadSync (callback)
 // Returns the data stored in `this.store` synchronously.
 //
-Literal.prototype.loadSync = function () {
+Literal.prototype.loadSync = function() {
   return this.store;
 };
