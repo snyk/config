@@ -1,0 +1,67 @@
+version: 2.1
+
+defaults: &defaults
+  parameters:
+    node_version:
+      type: string
+      default: ''
+  docker:
+    - image: circleci/node:<< parameters.node_version >>
+  working_directory: ~/snyk-config
+
+commands:
+  install_deps:
+    description: Install dependencies
+    steps:
+      - run:
+          name: Install dependencies
+          command: npm install
+
+jobs:
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - install_deps
+      - run:
+          name: Run tests
+          command: npm test
+
+  release:
+    <<: *defaults
+    steps:
+      - checkout
+      - install_deps
+      - run:
+          name: Publish to GitHub
+          command: npx semantic-release
+
+workflows:
+  version: 2
+  test_and_release:
+    jobs:
+      - test:
+          name: Unix Tests for Node=14
+          context: nodejs-install
+          node_version: '14'
+      - test:
+          name: Unix Tests for Node=12
+          context: nodejs-install
+          node_version: '12'
+      - test:
+          name: Unix Tests for Node=10
+          context: nodejs-install
+          node_version: '10'
+      - test:
+          name: Unix Tests for Node=8
+          context: nodejs-install
+          node_version: '8'
+
+      - release:
+          name: Release
+          context: nodejs-app-release
+          node_version: '14'
+          filters:
+            branches:
+              only:
+                - master
