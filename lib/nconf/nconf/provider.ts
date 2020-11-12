@@ -31,7 +31,7 @@ export const Provider = function(this: any, options = {}) {
 // in this instance
 //
 
-['env'].forEach(function(type) {
+['argv', 'env'].forEach(function(type) {
   Provider.prototype[type] = function() {
     const args = [type].concat(Array.prototype.slice.call(arguments));
     return this.add.apply(this, args);

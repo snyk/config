@@ -30,7 +30,8 @@
   "dependencies": {
     "async": "^3.2.0",
     "debug": "^4.1.1",
-    "lodash.merge": "^4.6.2"
+    "lodash.merge": "^4.6.2",
+    "yargs": "^16.1.0"
   },
   "repository": {
     "type": "git",

@@ -5,9 +5,9 @@
  *
  */
 
-var util = require('util'),
-    common = require('../common'),
-    Memory = require('./memory').Memory;
+import * as util from 'util';
+import * as common from '../common';
+import { Memory } from './memory';
 
 //
 // ### function Argv (options)
@@ -15,36 +15,39 @@ var util = require('util'),
 // Constructor function for the Argv nconf store, a simple abstraction
 // around the Memory store that can read command-line arguments.
 //
-var Argv = exports.Argv = function (options, usage) {
+export const Argv = function(this: any, options, usage) {
   Memory.call(this, options);
 
-  options        = options || {};
-  this.type     = 'argv';
-  this.readOnly  = options.readOnly !== undefined? options.readOnly : true;
-  this.options  = options;
-  this.usage    = usage;
+  options = options || {};
+  this.type = 'argv';
+  this.readOnly = options.readOnly !== undefined ? options.readOnly : true;
+  this.options = options;
+  this.usage = usage;
 
-  if(typeof options.readOnly === 'boolean') {
-    this.readOnly  = options.readOnly;
+  if (typeof options.readOnly === 'boolean') {
+    this.readOnly = options.readOnly;
     delete options.readOnly;
     // FIXME; should not mutate options!!!!
   } else {
     this.readOnly = true;
   }
 
-  if(typeof options.parseValues === 'boolean') {
-      this.parseValues = options.parseValues;
-      delete options.parseValues;
+  if (typeof options.parseValues === 'boolean') {
+    this.parseValues = options.parseValues;
+    delete options.parseValues;
   } else {
-      this.parseValues = false;
+    this.parseValues = false;
   }
   if (typeof options.transform === 'function') {
-      this.transform = options.transform;
-      delete options.transform;
+    this.transform = options.transform;
+    delete options.transform;
   } else {
-      this.transform = false;
+    this.transform = false;
   }
-  if (typeof options.separator === 'string' || options.separator instanceof RegExp) {
+  if (
+    typeof options.separator === 'string' ||
+    options.separator instanceof RegExp
+  ) {
     this.separator = options.separator;
     delete options.separator;
   } else {
@@ -59,7 +62,7 @@ util.inherits(Argv, Memory);
 // ### function loadSync ()
 // Loads the data passed in from `process.argv` into this instance.
 //
-Argv.prototype.loadSync = function () {
+Argv.prototype.loadSync = function() {
   this.loadArgv();
   return this.store;
 };
@@ -69,19 +72,22 @@ Argv.prototype.loadSync = function () {
 // Loads the data passed in from the command-line arguments
 // into this instance.
 //
-Argv.prototype.loadArgv = function () {
+Argv.prototype.loadArgv = function() {
   var self = this,
-      yargs, argv;
+    yargs,
+    argv;
 
-  yargs = isYargs(this.options) ?
-    this.options :
-    typeof this.options === 'object' ?
-      require('yargs')(process.argv.slice(2)).options(this.options) :
-      require('yargs')(process.argv.slice(2));
+  yargs = isYargs(this.options)
+    ? this.options
+    : typeof this.options === 'object'
+    ? require('yargs')(process.argv.slice(2)).options(this.options)
+    : require('yargs')(process.argv.slice(2));
 
-  if (typeof this.usage === 'string') { yargs.usage(this.usage) }
+  if (typeof this.usage === 'string') {
+    yargs.usage(this.usage);
+  }
 
-  argv = yargs.argv
+  argv = yargs.argv;
 
   if (!argv) {
     return;
@@ -93,11 +99,11 @@ Argv.prototype.loadArgv = function () {
 
   var tempWrite = false;
 
-  if(this.readOnly) {
+  if (this.readOnly) {
     this.readOnly = false;
     tempWrite = true;
   }
-  Object.keys(argv).forEach(function (key) {
+  Object.keys(argv).forEach(function(key) {
     var val = argv[key];
 
     if (typeof val !== 'undefined') {
@@ -107,15 +113,14 @@ Argv.prototype.loadArgv = function () {
 
       if (self.separator) {
         self.set(common.key.apply(common, key.split(self.separator)), val);
-      }
-      else {
+      } else {
         self.set(key, val);
       }
     }
   });
 
-  this.showHelp = yargs.showHelp
-  this.help     = yargs.help
+  this.showHelp = yargs.showHelp;
+  this.help = yargs.help;
 
   if (tempWrite) {
     this.readOnly = true;
@@ -124,5 +129,7 @@ Argv.prototype.loadArgv = function () {
 };
 
 function isYargs(obj) {
-  return (typeof obj === 'function' || typeof obj === 'object') && ('argv' in obj);
+  return (
+    (typeof obj === 'function' || typeof obj === 'object') && 'argv' in obj
+  );
 }

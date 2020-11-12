@@ -97,16 +97,15 @@ test('env truthy correctly parsed', function(t) {
   t.end();
 });
 
-// Argv parsing is now disabled
-// test('arg truthy correctly parsed', function(t) {
-//   var config = loadConfig(__dirname + '/fixtures/one');
+test('arg truthy correctly parsed', function(t) {
+  var config = loadConfig(__dirname + '/fixtures/one');
 
-//   t.equal(config.afoo, true, 'truth config matches');
-//   t.ok(!config.abar, 'false config matches');
-//   t.equal(config.azoo, 'true', 'strings left as is');
+  t.equal(config.afoo, true, 'truth config matches');
+  t.ok(!config.abar, 'false config matches');
+  t.equal(config.azoo, 'true', 'strings left as is');
 
-//   t.end();
-// });
+  t.end();
+});
 
 test('arg same keys', function(t) {
   setArgv('--afoo=first-value', '--afoo=second-value');
