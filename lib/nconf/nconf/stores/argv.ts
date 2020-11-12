@@ -5,9 +5,11 @@
  *
  */
 
+import * as path from 'path';
 import * as util from 'util';
 import * as common from '../common';
 import { Memory } from './memory';
+import * as minimist from 'minimist';
 
 //
 // ### function Argv (options)
@@ -73,21 +75,63 @@ Argv.prototype.loadSync = function() {
 // into this instance.
 //
 Argv.prototype.loadArgv = function() {
-  var self = this,
-    yargs,
+  let self = this,
     argv;
 
-  yargs = isYargs(this.options)
-    ? this.options
-    : typeof this.options === 'object'
-    ? require('yargs')(process.argv.slice(2)).options(this.options)
-    : require('yargs')(process.argv.slice(2));
+  // Adapted from the original yargs library that we are replacing
+  // Source: https://github.com/yargs/yargs/blob/cb01c98c44e30f55c2dc9434caef524ae433d9a4/lib/yargs-factory.ts#L96-L109
 
-  if (typeof this.usage === 'string') {
-    yargs.usage(this.usage);
+  /*
+    MIT License
+
+    Copyright 2010 James Halliday (mail@substack.net); Modified work Copyright 2014 Contributors (ben@npmjs.com)
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+  */
+  let default$0: string[];
+  if (/\b(node|iojs|electron)(\.exe)?$/.test(process.argv[0])) {
+    default$0 = process.argv.slice(1, 2);
+  } else {
+    default$0 = process.argv.slice(0, 1);
   }
 
-  argv = yargs.argv;
+  const scriptName = default$0
+    .map((x) => {
+      const b = path.relative(process.cwd(), x);
+      return x.match(/^(\/|([a-zA-Z]:)?\\)/) && b.length < x.length ? b : x;
+    })
+    .join(' ')
+    .trim();
+  // End of yargs block
+
+  // we don't support passing options to minimist
+  const minimistOutput = {
+    ...minimist(process.argv.slice(2)),
+    $0: scriptName, // yargs return this extra "scriptName" (parsed argv[1] above)
+  };
+
+  // Minimist does not support usage - we don't set it anywhere
+  // if (typeof this.usage === 'string') {
+  //   yargs.usage(this.usage);
+  // }
+
+  argv = minimistOutput;
 
   if (!argv) {
     return;
@@ -97,14 +141,14 @@ Argv.prototype.loadArgv = function() {
     argv = common.transform(argv, this.transform);
   }
 
-  var tempWrite = false;
+  let tempWrite = false;
 
   if (this.readOnly) {
     this.readOnly = false;
     tempWrite = true;
   }
   Object.keys(argv).forEach(function(key) {
-    var val = argv[key];
+    let val = argv[key];
 
     if (typeof val !== 'undefined') {
       if (self.parseValues) {
@@ -119,17 +163,12 @@ Argv.prototype.loadArgv = function() {
     }
   });
 
-  this.showHelp = yargs.showHelp;
-  this.help = yargs.help;
+  // minimist does not support these options
+  // this.showHelp = yargs.showHelp;
+  // this.help = yargs.help;
 
   if (tempWrite) {
     this.readOnly = true;
   }
   return this.store;
 };
-
-function isYargs(obj) {
-  return (
-    (typeof obj === 'function' || typeof obj === 'object') && 'argv' in obj
-  );
-}

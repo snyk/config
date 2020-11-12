@@ -48,7 +48,11 @@ export function loadConfig(
     match: snykMatch,
     whitelist: ['NODE_ENV', 'PORT'],
   });
+
+  // This argv parser is using minimist on the background, instead of yargs as nconf by default
+  // Do not pass `options` to this parser
   nconf.argv();
+
   nconf.file('secret', { file: path.resolve(secretConfig) });
   nconf.file('local', { file: localConfigPath });
   nconf.file('default', { file: path.resolve(dir, 'config.default.json') });
