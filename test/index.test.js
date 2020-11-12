@@ -107,7 +107,80 @@ test('arg truthy correctly parsed', function(t) {
   t.end();
 });
 
-test('env var substition throws on missing env vars', function(t) {
+test('arg same keys', function(t) {
+  resetArgv();
+  process.argv.push('--afoo=new-value');
+
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.afoo, 'new-value', 'last arg wins');
+
+  t.end();
+});
+
+test('args unknown', function(t) {
+  resetArgv();
+
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.asome, undefined, 'not existing arg is undefined');
+
+  t.end();
+});
+
+test('args whitespaces in assignment', function(t) {
+  resetArgv();
+  process.argv.push('--abar   new-value');
+
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, undefined, 'should be undefined');
+
+  t.end();
+});
+
+test('args numbers assignment', function(t) {
+  resetArgv();
+  process.argv.push('--abar 1');
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, undefined, 'should be undefined without equal sign');
+
+  resetArgv();
+  process.argv.push('--abar=0');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, 0, 'should be 0');
+
+  resetArgv();
+  process.argv.push('--abar=1');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, 1, 'should be 1');
+
+  resetArgv();
+  process.argv.push('--abar=-1');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, -1, 'should be -1');
+
+  resetArgv();
+  process.argv.push('--abar=-1.55');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, -1.55, 'should be -1.55');
+
+  resetArgv();
+  process.argv.push('--abar=.66');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, 0.66, 'should be 0.66');
+
+  t.end();
+});
+
+test('args boolean assignment', function(t) {
+  resetArgv();
+  process.argv.push('--no-bar');
+
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.bar, false, 'arguments with no prefix');
+
+  t.end();
+});
+
+test('env var substitution throws on missing env vars', function(t) {
   delete process.env.CONFIG_TEST_VALUE;
 
   try {
@@ -166,6 +239,10 @@ test('env overrides for which files to read', (t) => {
 test('type can be changed from int to string', (t) => {
   const config = loadConfig(__dirname + '/fixtures/type-change');
 
-  t.equal(config.foo, "bar", '10 becomes bar')
-  t.end()
+  t.equal(config.foo, 'bar', '10 becomes bar');
+  t.end();
 });
+
+function resetArgv() {
+  process.argv.length = 4;
+}
