@@ -107,12 +107,100 @@ test('arg truthy correctly parsed', function(t) {
   t.end();
 });
 
-test('arg same keys', function(t) {
+test('multiple args with same key gets moved to array', function(t) {
   resetArgv();
-  process.argv.push('--afoo=new-value');
+  process.argv.push('--afoo=first-value');
+  process.argv.push('--afoo=second-value');
 
   let config = loadConfig(__dirname + '/fixture/one');
-  t.equal(config.afoo, 'new-value', 'last arg wins');
+  t.deepEqual(
+    config.afoo,
+    ['first-value', 'second-value'],
+    'returns array with multiple values',
+  );
+
+  resetArgv();
+  process.argv.push('--afoo');
+  process.argv.push('first-value');
+  process.argv.push('--afoo');
+  process.argv.push('second-value');
+
+  config = loadConfig(__dirname + '/fixture/one');
+  t.deepEqual(
+    config.afoo,
+    ['first-value', 'second-value'],
+    'returns array with multiple values',
+  );
+
+  t.end();
+});
+
+test('snyk specific args with SNYK_ prefix', function(t) {
+  resetArgv();
+  process.argv.push('--snyk_foo');
+  process.argv.push('--SNYK_bar');
+  process.argv.push('--SNYK_BAZ');
+  process.argv.push('--SNYK_foo__bar');
+
+  const config = loadConfig(__dirname + '/fixture/one');
+
+  // --snyk_foo
+  t.equal(
+    config.foo,
+    undefined,
+    'lowercase snyk_ option should not be stripped',
+  );
+  t.equal(config.snyk_foo, true, 'lowercase arg should get passed literally');
+
+  // --SNYK_bar
+  t.equal(
+    config.snyk_bar,
+    undefined,
+    'uppercase SNYK_ option should not be available',
+  );
+  t.equal(
+    config.bar,
+    true,
+    'lowercase arg should get passed without SNYK_ prefix',
+  );
+
+  // --SNYK_BAZ
+  t.equal(
+    config.SNYK_BAZ,
+    undefined,
+    'uppercase SNYK_ option should not be available',
+  );
+  t.equal(
+    config.snyk_baz,
+    undefined,
+    'uppercase SNYK_ option should not be available',
+  );
+  t.equal(
+    config.BAZ,
+    true,
+    'uppercase arg should get passed without SNYK_ prefix',
+  );
+
+  t.equal(
+    config.foo__bar,
+    true,
+    'double__underscore options are not split in argv',
+  );
+
+  t.end();
+});
+
+test('arg with JSON-like string', function(t) {
+  resetArgv();
+  process.argv.push('--json');
+  process.argv.push(JSON.stringify({ hello: 'world' }));
+
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(
+    typeof config.json,
+    'string',
+    'JSON-like key should still be a string',
+  );
 
   t.end();
 });
@@ -128,19 +216,30 @@ test('args unknown', function(t) {
 
 test('args whitespaces in assignment', function(t) {
   resetArgv();
-  process.argv.push('--abar   new-value');
+  process.argv.push('--abar=   new-value');
 
-  let config = loadConfig(__dirname + '/fixture/one');
-  t.equal(config.abar, undefined, 'should be undefined');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, '   new-value', 'should be string with empty spaces');
+
+  resetArgv();
+  process.argv.push('--abar=', '   new-value');
+
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, '', 'should be empty string');
+  t.deepEqual(
+    config._,
+    ['   new-value'],
+    '_ should be array with spaced string',
+  );
 
   t.end();
 });
 
 test('args numbers assignment', function(t) {
   resetArgv();
-  process.argv.push('--abar 1');
+  process.argv.push('--abar', '1');
   let config = loadConfig(__dirname + '/fixture/one');
-  t.equal(config.abar, undefined, 'should be undefined without equal sign');
+  t.equal(config.abar, 1, 'should be 1 without equal sign');
 
   resetArgv();
   process.argv.push('--abar=0');
@@ -175,7 +274,7 @@ test('args boolean assignment', function(t) {
   process.argv.push('--no-bar');
 
   let config = loadConfig(__dirname + '/fixture/one');
-  t.equal(config.bar, false, 'arguments with no prefix');
+  t.equal(config.bar, false, 'arguments with no prefix should be false');
 
   t.end();
 });
@@ -244,5 +343,5 @@ test('type can be changed from int to string', (t) => {
 });
 
 function resetArgv() {
-  process.argv.length = 4;
+  process.argv.length = 2;
 }
