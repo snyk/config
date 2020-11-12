@@ -9,6 +9,7 @@ import * as common from './nconf/common';
 import { Provider } from './nconf/provider';
 import * as formats from './nconf/formats';
 
+import { Argv } from './nconf/stores/argv';
 import { Env } from './nconf/stores/env';
 import { File } from './nconf/stores/file';
 import { Literal } from './nconf/stores/literal';
@@ -19,6 +20,7 @@ import { Memory } from './nconf/stores/memory';
 //
 const nconf = new Provider();
 
+nconf.Argv = Argv;
 nconf.Env = Env;
 nconf.File = File;
 nconf.Literal = Literal;
