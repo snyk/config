@@ -107,7 +107,156 @@ test('arg truthy correctly parsed', function(t) {
   t.end();
 });
 
-test('env var substition throws on missing env vars', function(t) {
+test('arg same keys', function(t) {
+  setArgv('--afoo=first-value', '--afoo=second-value');
+
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.deepEqual(
+    config.afoo,
+    ['first-value', 'second-value'],
+    'returns array with multiple values',
+  );
+
+  setArgv('--afoo', 'first-value', '--afoo', 'second-value');
+
+  config = loadConfig(__dirname + '/fixture/one');
+  t.deepEqual(
+    config.afoo,
+    ['first-value', 'second-value'],
+    'returns array with multiple values',
+  );
+
+  t.end();
+});
+
+test('snyk specific args with SNYK_ prefix', function(t) {
+  setArgv('--snyk_foo', '--SNYK_bar', '--SNYK_BAZ', '--SNYK_foo__bar');
+
+  const config = loadConfig(__dirname + '/fixture/one');
+
+  // --snyk_foo
+  t.equal(
+    config.foo,
+    undefined,
+    'lowercase snyk_ option should not be stripped',
+  );
+  t.equal(config.snyk_foo, true, 'lowercase arg should get passed literally');
+
+  // --SNYK_bar
+  t.equal(
+    config.snyk_bar,
+    undefined,
+    'uppercase SNYK_ option should not be available',
+  );
+  t.equal(
+    config.bar,
+    true,
+    'lowercase arg should get passed without SNYK_ prefix',
+  );
+
+  // --SNYK_BAZ
+  t.equal(
+    config.SNYK_BAZ,
+    undefined,
+    'uppercase SNYK_ option should not be available',
+  );
+  t.equal(
+    config.snyk_baz,
+    undefined,
+    'uppercase SNYK_ option should not be available',
+  );
+  t.equal(
+    config.BAZ,
+    true,
+    'uppercase arg should get passed without SNYK_ prefix',
+  );
+
+  t.equal(
+    config.foo__bar,
+    true,
+    'double__underscore options are not split in argv',
+  );
+
+  t.end();
+});
+
+test('arg with JSON-like string', function(t) {
+  setArgv('--json', JSON.stringify({ hello: 'world' }));
+
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(
+    typeof config.json,
+    'string',
+    'JSON-like key should still be a string',
+  );
+
+  t.end();
+});
+
+test('args unknown', function(t) {
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.asome, undefined, 'not existing arg is undefined');
+
+  t.end();
+});
+
+test('args whitespaces in assignment', function(t) {
+  setArgv('--abar=   new-value');
+
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, '   new-value', 'should be string with empty spaces');
+
+  setArgv('--abar=', '   new-value');
+
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, '', 'should be empty string');
+  t.deepEqual(
+    config._,
+    ['   new-value'],
+    '_ should be array with spaced string',
+  );
+
+  t.end();
+});
+
+test('args numbers assignment', function(t) {
+  setArgv('--abar', '1');
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, 1, 'should be 1 without equal sign');
+
+  setArgv('--abar=0');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, 0, 'should be 0');
+
+  setArgv('--abar=1');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, 1, 'should be 1');
+
+  setArgv('--abar=-1');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, -1, 'should be -1');
+
+  setArgv('--abar=-1.55');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, -1.55, 'should be -1.55');
+
+  setArgv('--abar=.66');
+  config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.abar, 0.66, 'should be 0.66');
+
+  t.end();
+});
+
+test('args boolean assignment', function(t) {
+  setArgv('--no-bar');
+
+  let config = loadConfig(__dirname + '/fixture/one');
+  t.equal(config.bar, false, 'arguments with no prefix should be false');
+
+  t.end();
+});
+
+test('env var substitution throws on missing env vars', function(t) {
   delete process.env.CONFIG_TEST_VALUE;
 
   try {
@@ -162,3 +311,15 @@ test('env overrides for which files to read', (t) => {
   delete process.env.CONFIG_SECRET_FILE;
   t.end();
 });
+
+test('type can be changed from int to string', (t) => {
+  const config = loadConfig(__dirname + '/fixtures/type-change');
+
+  t.equal(config.foo, 'bar', '10 becomes bar');
+  t.end();
+});
+
+function setArgv(...argv) {
+  process.argv.length = 4;
+  process.argv.push(...argv);
+}
