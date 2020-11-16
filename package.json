@@ -15,9 +15,8 @@
     "config"
   ],
   "author": "Remy Sharp",
-  "license": "Apache-2.0",
+  "license": "(Apache-2.0 AND MIT)",
   "devDependencies": {
-    "@types/nconf": "^0.10.0",
     "@types/node": "^6.14.9",
     "@typescript-eslint/eslint-plugin": "^2.7.0",
     "@typescript-eslint/parser": "^2.7.0",
@@ -29,9 +28,10 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
+    "async": "^3.2.0",
     "debug": "^4.1.1",
     "lodash.merge": "^4.6.2",
-    "nconf": "^0.10.0"
+    "minimist": "^1.2.5"
   },
   "repository": {
     "type": "git",

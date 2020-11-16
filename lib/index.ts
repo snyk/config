@@ -1,10 +1,8 @@
 import * as debugFactory from 'debug';
-import * as nconf from 'nconf';
 import * as path from 'path';
 import * as _merge from 'lodash.merge';
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-require('./nconf-truth');
+// Use vendored and patched nconf without yargs and with our custom TRUE/FALSE logic in env.ts file
+import nconf from './nconf/nconf';
 
 const debug = debugFactory('snyk:config');
 
@@ -50,7 +48,11 @@ export function loadConfig(
     match: snykMatch,
     whitelist: ['NODE_ENV', 'PORT'],
   });
+
+  // This argv parser is using minimist on the background, instead of yargs as nconf by default
+  // Do not pass `options` to this parser
   nconf.argv();
+
   nconf.file('secret', { file: path.resolve(secretConfig) });
   nconf.file('local', { file: localConfigPath });
   nconf.file('default', { file: path.resolve(dir, 'config.default.json') });

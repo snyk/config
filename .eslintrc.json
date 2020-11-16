@@ -6,6 +6,7 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
+  "ignorePatterns": ["lib/nconf/**/*.ts"],
   "env": {
     "node": true,
     "es6": true
