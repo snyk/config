@@ -1,10 +1,10 @@
-import * as debugFactory from 'debug';
 import * as path from 'path';
 import * as _merge from 'lodash.merge';
 // Use vendored and patched nconf without yargs and with our custom TRUE/FALSE logic in env.ts file
 import nconf from './nconf/nconf';
 
-const debug = debugFactory('snyk:config');
+const util = require('util');
+const debug = util.debuglog('snyk:config');
 
 export type Json =
   | string
