@@ -33,7 +33,7 @@
     "async": "^3.2.0",
     "debug": "^4.1.1",
     "lodash.merge": "^4.6.2",
-    "minimist": "^1.2.5"
+    "minimist": "^1.2.6"
   },
   "repository": {
     "type": "git",
