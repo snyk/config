@@ -139,7 +139,7 @@ describe('snyk-config', () => {
     config = loadConfig(__dirname + '/fixture/one');
 
     expect(config.abar).toEqual('');
-    expect(config._).toEqual([, , '   new-value']);
+    expect(config._).toEqual(['   new-value']);
   });
 
   it('stores numbers in keyword args as numbers', () => {
@@ -228,7 +228,7 @@ describe('snyk-config', () => {
 });
 
 function setArgv(...argv: string[]) {
-  process.argv.length = 4;
+  process.argv.length = 2;
   process.argv.push(...argv);
 }
 
