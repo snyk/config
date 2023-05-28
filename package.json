@@ -30,7 +30,7 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "async": "^3.2.0",
+    "async": "^3.2.2",
     "debug": "^4.1.1",
     "lodash.merge": "^4.6.2",
     "minimist": "^1.2.6"
