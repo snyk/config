@@ -127,7 +127,7 @@ File.prototype.load = function(callback) {
         }
 
         self.store = self.parse(stringData);
-      } catch (ex) {
+      } catch (ex: any) {
         return callback(
           new Error(
             'Error parsing your configuration file: [' +
@@ -165,7 +165,7 @@ File.prototype.loadSync = function() {
     }
 
     this.store = this.parse(fileData);
-  } catch (ex) {
+  } catch (ex: any) {
     throw new Error(
       'Error parsing your configuration file: [' +
         this.file +
