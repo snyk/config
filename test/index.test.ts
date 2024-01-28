@@ -4,10 +4,12 @@ import * as path from 'path';
 describe('snyk-config', () => {
   beforeAll(() => {
     removeSnykKeysFromEnv();
+    removeConfigKeysFromEnv();
   });
 
   afterEach(() => {
     removeSnykKeysFromEnv();
+    removeConfigKeysFromEnv();
   });
 
   it('can be called twice, on different config files', () => {
@@ -225,6 +227,117 @@ describe('snyk-config', () => {
 
     expect(config.foo).toEqual('bar');
   });
+
+  it('does not parse array values from env vars', () => {
+    const testArr = [1, 2, 3];
+    const testArrStr = JSON.stringify(testArr);
+
+    process.env.SNYK_TEST_ARR = testArrStr;
+
+    const config = loadConfig(__dirname + '/fixtures/one');
+
+    expect(config.TEST_ARR).toEqual(testArrStr);
+  });
+
+  describe.each`
+    optionsVal   | envVal     | isParseExpected
+    ${true}      | ${'true'}  | ${true}
+    ${true}      | ${'false'} | ${true}
+    ${true}      | ${''}      | ${true}
+    ${false}     | ${'true'}  | ${false}
+    ${false}     | ${'false'} | ${false}
+    ${false}     | ${''}      | ${false}
+    ${undefined} | ${'true'}  | ${true}
+    ${undefined} | ${'false'} | ${false}
+    ${undefined} | ${''}      | ${false}
+  `(
+    `when \`options.parseEnvValues\` is set to \`$optionsVal\` and \`CONFIG_PARSE_ENV_VALUES\` is set to \"$envVal"\``,
+    ({ optionsVal, envVal, isParseExpected }) => {
+      it(`${
+        isParseExpected ? 'parses' : 'does not parse'
+      } array values from env vars`, () => {
+        const testArr = [1, 2, 3];
+        const testArrStr = JSON.stringify(testArr);
+
+        process.env.CONFIG_PARSE_ENV_VALUES = envVal;
+        process.env.SNYK_TEST_ARR = testArrStr;
+
+        const config = loadConfig(__dirname + '/fixtures/one', {
+          parseEnvValues: optionsVal,
+        });
+
+        expect(config.TEST_ARR).toEqual(isParseExpected ? testArr : testArrStr);
+      });
+
+      it('JSON-unparsable values are not parsed', () => {
+        const testInvalidArrStr = '[1,]';
+        const expectedVal = testInvalidArrStr;
+
+        process.env.CONFIG_PARSE_ENV_VALUES = envVal;
+        process.env.SNYK_TEST_ARR = testInvalidArrStr;
+
+        const config = loadConfig(__dirname + '/fixtures/one', {
+          parseEnvValues: optionsVal,
+        });
+
+        expect(config.TEST_ARR).toEqual(expectedVal);
+      });
+    },
+  );
+
+  describe('when `options.parseEnvValues` is set to a non-boolean value and `CONFIG_PARSE_ENV_VALUES` is set to `"true"`', () => {
+    it('throws an error', () => {
+      process.env.CONFIG_PARSE_ENV_VALUES = 'true';
+
+      expect(() =>
+        loadConfig(__dirname + '/fixtures/one', {
+          parseEnvValues: [] as any,
+        }),
+      ).toThrowError('options.parseEnvValues must be a boolean');
+    });
+  });
+
+  describe('when `options.parseEnvValues` is set to `true` and `CONFIG_PARSE_ENV_VALUES` is set to a non-boolean value', () => {
+    it('parses array values from env vars', () => {
+      const testArr = [1, 2, 3];
+      const testArrStr = JSON.stringify(testArr);
+
+      process.env.CONFIG_PARSE_ENV_VALUES = '$$$';
+      process.env.SNYK_TEST_ARR = testArrStr;
+
+      const config = loadConfig(__dirname + '/fixtures/one', {
+        parseEnvValues: true,
+      });
+
+      expect(config.TEST_ARR).toEqual(testArr);
+    });
+  });
+
+  describe('when `options.parseEnvValues` is set to `false` and `CONFIG_PARSE_ENV_VALUES` is set to a non-boolean value', () => {
+    it('does not parse array values from env vars', () => {
+      const testArr = [1, 2, 3];
+      const testArrStr = JSON.stringify(testArr);
+
+      process.env.CONFIG_PARSE_ENV_VALUES = '$$$';
+      process.env.SNYK_TEST_ARR = testArrStr;
+
+      const config = loadConfig(__dirname + '/fixtures/one', {
+        parseEnvValues: false,
+      });
+
+      expect(config.TEST_ARR).toEqual(testArrStr);
+    });
+  });
+
+  describe('when `options.parseEnvValues` is not set and `CONFIG_PARSE_ENV_VALUES` is set to a non-boolean', () => {
+    it('throws an error', () => {
+      process.env.CONFIG_PARSE_ENV_VALUES = 3 as any;
+
+      expect(() => loadConfig(__dirname + '/fixtures/one')).toThrowError(
+        'CONFIG_PARSE_ENV_VALUES must be a boolean',
+      );
+    });
+  });
 });
 
 function setArgv(...argv: string[]) {
@@ -242,4 +355,12 @@ function removeSnykKeysFromEnv() {
   delete process.env.SERVICE_ENV;
   delete process.env.CONFIG_SECRET_FILE;
   delete process.env.CONFIG_TEST_VALUE;
+}
+
+function removeConfigKeysFromEnv() {
+  Object.keys(process.env).forEach((envKey) => {
+    if (envKey.startsWith('CONFIG')) {
+      delete process.env[envKey];
+    }
+  });
 }
