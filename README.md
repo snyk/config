@@ -76,3 +76,6 @@ $ SNYK_from=cli node app.js
   becomes `foo = "10"`
 * To create a nested object structure from the environment values, use two underscores:
   `SNYK_foo__bar = 10` becomes `foo = { bar: "10" }`
+* By default, environment variable values will not be JSON-parsed.
+  Parsing can be enabled by adding the `parseEnvValues` option, or by setting
+  the `CONFIG_PARSE_ENV_VALUES` environment variable.

@@ -15,6 +15,7 @@ export type Json =
   | Json[];
 
 export interface Options {
+  parseEnvValues?: boolean;
   secretConfig?: string;
 }
 
@@ -32,6 +33,8 @@ export function loadConfig(
     process.env['CONFIG_SECRET_FILE'] ||
     path.resolve(dir, 'config.secret.json');
 
+  const parseEnvValues = getParseEnvValues(options);
+
   if (!path.isAbsolute(dir)) {
     throw new Error('config requires absolute path to read from');
   }
@@ -44,6 +47,7 @@ export function loadConfig(
   const snykMatch = /^SNYK_.*$/;
 
   nconf.env({
+    parseValues: parseEnvValues,
     separator: '__',
     match: snykMatch,
     whitelist: ['NODE_ENV', 'PORT'],
@@ -60,7 +64,7 @@ export function loadConfig(
   const config = nconf.get();
 
   // strip prefix from env vars in config
-  Object.keys(config).forEach(function(key) {
+  Object.keys(config).forEach(function (key) {
     if (key.match(snykMatch)) {
       const trimmedKey = key.replace(/^SNYK_/, '');
       if (
@@ -84,7 +88,7 @@ export function loadConfig(
 
 // recursively replace ${VAL} in config values with process.env.VAL
 function substituteEnvVarValues(config): void {
-  Object.keys(config).forEach(function(key) {
+  Object.keys(config).forEach(function (key) {
     // recurse through nested objects
     if (typeof config[key] === 'object') {
       return substituteEnvVarValues(config[key]);
@@ -92,7 +96,7 @@ function substituteEnvVarValues(config): void {
 
     // replace /\${.*?}/g in strings with env var if such exists
     if (typeof config[key] === 'string') {
-      config[key] = config[key].replace(/(\${.*?})/g, function(_, match) {
+      config[key] = config[key].replace(/(\${.*?})/g, function (_, match) {
         const val = match.slice(2, -1); // ditch the wrappers
 
         // explode if env var is missing
@@ -112,4 +116,37 @@ function substituteEnvVarValues(config): void {
       });
     }
   });
+}
+
+function getParseEnvValues(configOptions: Options): boolean {
+  if (configOptions.parseEnvValues !== undefined) {
+    if (typeof configOptions.parseEnvValues !== 'boolean') {
+      throw new Error('options.parseEnvValues must be a boolean');
+    }
+
+    return configOptions.parseEnvValues;
+  }
+
+  const envVarVal = process.env['CONFIG_PARSE_ENV_VALUES'];
+  if (
+    envVarVal !== undefined &&
+    envVarVal !== '' &&
+    envVarVal !== 'undefined'
+  ) {
+    let parsed: unknown;
+
+    try {
+      parsed = JSON.parse(envVarVal.toLowerCase());
+    } catch {
+      throw new Error('CONFIG_PARSE_ENV_VALUES must be a boolean');
+    }
+
+    if (typeof parsed !== 'boolean') {
+      throw new Error('CONFIG_PARSE_ENV_VALUES must be a boolean');
+    }
+
+    return parsed;
+  }
+
+  return false;
 }
