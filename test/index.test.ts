@@ -187,6 +187,26 @@ describe('snyk-config', () => {
     expect(() => loadConfig(__dirname + '/fixtures/env')).toThrow();
   });
 
+  describe('when config contains null or undefined during env substitution', () => {
+    it('throws TypeError and rethrows the error', () => {
+      expect(() => loadConfig(__dirname + '/fixtures/null-in-config')).toThrow(
+        'Cannot convert undefined or null to object',
+      );
+    });
+
+    it('rethrows the same error (try-catch does not swallow)', () => {
+      try {
+        loadConfig(__dirname + '/fixtures/null-in-config');
+        throw new Error('loadConfig should have thrown');
+      } catch (err: any) {
+        expect(err).toBeInstanceOf(TypeError);
+        expect(err.message).toBe(
+          'Cannot convert undefined or null to object',
+        );
+      }
+    });
+  });
+
   it('supports substituting config values with environment variables', () => {
     const testFixtureValue = 'a fixture value';
     process.env.CONFIG_TEST_VALUE = testFixtureValue;

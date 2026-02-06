@@ -79,7 +79,12 @@ export function loadConfig(
     }
   });
 
-  substituteEnvVarValues(config);
+  try {
+    substituteEnvVarValues(config);
+  } catch (err) {
+    debug('There was an error substituting env var values: %s', err, JSON.stringify(config, null, 2));
+    throw err;
+  }
 
   debug('loading from %s', dir, JSON.stringify(config, null, 2));
 
