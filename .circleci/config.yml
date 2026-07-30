@@ -59,6 +59,7 @@ workflows:
           name: Scan repository for secrets
           context:
             - snyk-bot-slack
+            - prodsec-orb-runtime
           channel: team-arch
           trusted-branch: main
           filters:
